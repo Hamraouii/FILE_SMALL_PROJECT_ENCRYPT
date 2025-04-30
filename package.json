@@ -1,0 +1,30 @@
+{
+    "name": "secure-file-encryption-app",
+    "version": "1.0.0",
+    "description": "Web application for encrypting and decrypting files using public/private key cryptography",
+    "main": "app.js",
+    "scripts": {
+        "start": "node app.js",
+        "dev": "nodemon app.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "dependencies": {
+        "bcrypt": "^5.1.0",
+        "body-parser": "^1.20.2",
+        "connect-mongo": "^5.0.0",
+        "csv-parser": "^3.0.0",
+        "dotenv": "^16.5.0",
+        "ejs": "^3.1.9",
+        "exceljs": "^4.3.0",
+        "express": "^4.18.2",
+        "express-session": "^1.17.3",
+        "mongoose": "^7.3.1",
+        "multer": "^1.4.5-lts.1"
+    },
+    "devDependencies": {
+        "nodemon": "^3.1.10"
+    },
+    "engines": {
+        "node": ">=14.0.0"
+    }
+}

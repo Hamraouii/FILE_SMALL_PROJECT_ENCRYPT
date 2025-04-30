@@ -1,0 +1,96 @@
+<!-- views/decrypt.ejs -->
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Déchiffrer des Fichiers - Chiffrement Sécurisé</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+    <%- include('partials/navbar') %>
+
+        <div class="container mt-4">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h3>Déchiffrer des Fichiers</h3>
+                        </div>
+                        <div class="card-body">
+                            <p>Sélectionnez un fichier chiffré et entrez votre mot de passe pour le déchiffrer.</p>
+
+                            <form id="decryptForm" enctype="multipart/form-data">
+                                <div class="mb-3">
+                                    <label for="file" class="form-label">Sélectionner un Fichier Chiffré</label>
+                                    <input type="file" class="form-control" id="file" name="file" required>
+                                    <small class="text-muted">Sélectionnez le fichier chiffré (.enc) que vous souhaitez déchiffrer</small>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Votre Mot de Passe</label>
+                                    <input type="password" class="form-control" id="password" name="password" required>
+                                    <small class="text-muted">Ceci est nécessaire pour accéder à votre clé privée</small>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary">Déchiffrer le Fichier</button>
+                                </div>
+                            </form>
+
+                            <div id="decryptionResults" class="mt-4 d-none">
+                                <div class="alert alert-success">
+                                    <h4 class="alert-heading">Fichier Déchiffré avec Succès !</h4>
+                                    <p>Votre fichier a été déchiffré et est prêt à être téléchargé.</p>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <a id="downloadDecryptedFile" href="#" class="btn btn-success">Télécharger le Fichier Déchiffré</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const form = document.getElementById('decryptForm');
+                const decryptionResults = document.getElementById('decryptionResults');
+                const downloadLink = document.getElementById('downloadDecryptedFile');
+
+                form.addEventListener('submit', async function (e) {
+                    e.preventDefault();
+
+                    const formData = new FormData(form);
+
+                    try {
+                        const response = await fetch('/upload-decrypt', {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            form.classList.add('d-none');
+                            decryptionResults.classList.remove('d-none');
+                            downloadLink.href = `/download/${data.decryptedFile}`;
+                        } else {
+                            alert('Erreur : ' + data.error);
+                        }
+                    } catch (error) {
+                        console.error('Erreur lors du déchiffrement du fichier:', error);
+                        alert('Erreur lors du déchiffrement du fichier. Veuillez réessayer.');
+                    }
+                });
+            });
+        </script>
+</body>
+
+</html>

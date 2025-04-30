@@ -1,0 +1,116 @@
+<!-- views/encrypt.ejs -->
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chiffrer des Fichiers - Chiffrement Sécurisé</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+    <%- include('partials/navbar') %>
+
+        <div class="container mt-4">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h3>Chiffrer des Fichiers</h3>
+                        </div>
+                        <div class="card-body">
+                            <p>Sélectionnez un fichier à chiffrer et choisissez le destinataire dont la clé publique sera utilisée pour le chiffrement.</p>
+
+                            <form id="encryptForm" enctype="multipart/form-data">
+                                <div class="mb-3">
+                                    <label for="file" class="form-label">Sélectionner un Fichier (CSV, Excel, etc.)</label>
+                                    <input type="file" class="form-control" id="file" name="file" required>
+                                    <small class="text-muted">Types de fichiers supportés : CSV, XLS, XLSX, TXT, PDF, etc.</small>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="recipientUserId" class="form-label">Sélectionner le Destinataire</label>
+                                    <select class="form-select" id="recipientUserId" name="recipientUserId" required>
+                                        <option value="">-- Sélectionner un utilisateur --</option>
+                                        <!-- Will be populated via AJAX -->
+                                    </select>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary">Chiffrer le Fichier</button>
+                                </div>
+                            </form>
+
+                            <div id="encryptionResults" class="mt-4 d-none">
+                                <div class="alert alert-success">
+                                    <h4 class="alert-heading">Fichier Chiffré avec Succès !</h4>
+                                    <p>Votre fichier a été chiffré et est prêt à être téléchargé.</p>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <a id="downloadEncryptedFile" href="#" class="btn btn-success">Télécharger le Fichier Chiffré</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                // Fetch users list for recipient selection
+                fetch('/users')
+                    .then(response => response.json())
+                    .then(users => {
+                        const select = document.getElementById('recipientUserId');
+                        users.forEach(user => {
+                            if (user.publicKey) { // Only show users with public keys
+                                const option = document.createElement('option');
+                                option.value = user._id;
+                                option.textContent = `${user.name} (${user.email})`;
+                                select.appendChild(option);
+                            }
+                        });
+                    })
+                    .catch(error => console.error('Erreur lors de la récupération des utilisateurs:', error));
+
+                // Handle form submission
+                const form = document.getElementById('encryptForm');
+                const encryptionResults = document.getElementById('encryptionResults');
+                const downloadLink = document.getElementById('downloadEncryptedFile');
+
+                form.addEventListener('submit', async function (e) {
+                    e.preventDefault();
+
+                    const formData = new FormData(form);
+
+                    try {
+                        const response = await fetch('/upload-encrypt', {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            form.classList.add('d-none');
+                            encryptionResults.classList.remove('d-none');
+                            downloadLink.href = `/download/${data.encryptedFile}`;
+                        } else {
+                            alert('Erreur : ' + data.error);
+                        }
+                    } catch (error) {
+                        console.error('Erreur lors du chiffrement du fichier:', error);
+                        alert('Erreur lors du chiffrement du fichier. Veuillez réessayer.');
+                    }
+                });
+            });
+        </script>
+</body>
+
+</html>
+

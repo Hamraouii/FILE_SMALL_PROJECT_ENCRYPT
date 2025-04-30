@@ -1,0 +1,121 @@
+<!-- views/generate-keys.ejs -->
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générer les Clés - Chiffrement Sécurisé</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="text-center">Générer les Clés de Chiffrement</h3>
+                    </div>
+                    <div class="card-body">
+                        <p>Avant d'utiliser le système, vous devez générer vos clés de chiffrement.</p>
+                        <p><strong>Important :</strong> Votre clé privée sera chiffrée avec votre mot de passe et stockée de manière sécurisée. Cependant, il est recommandé de sauvegarder une copie de votre clé privée dans un endroit sûr.</p>
+
+                        <form id="generateKeysForm">
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Confirmer le Mot de Passe</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                                <small class="text-muted">Ceci doit correspondre à votre mot de passe de connexion</small>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">Générer les Clés</button>
+                            </div>
+                        </form>
+
+                        <div id="keyResults" class="mt-4 d-none">
+                            <div class="alert alert-success">
+                                <h4 class="alert-heading">Clés Générées avec Succès !</h4>
+                                <p>Votre clé publique a été téléchargée sur le serveur. Votre clé privée est affichée ci-dessous. Veuillez la sauvegarder dans un endroit sûr.</p>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="publicKey" class="form-label">Votre Clé Publique :</label>
+                                <textarea class="form-control" id="publicKey" rows="5" readonly></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="privateKey" class="form-label">Votre Clé Privée (SAUVEGARDER CECI
+                                    SÉCURITAIRMENT) :</label>
+                                <textarea class="form-control" id="privateKey" rows="8" readonly></textarea>
+                                <small class="text-danger">C'est la seule fois où votre clé privée sera montrée. Sauvegardez-la maintenant !</small>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button id="savePrivateKey" class="btn btn-outline-primary">Télécharger la Clé
+                                    Privée</button>
+                                <a href="/dashboard" class="btn btn-success">Continuer au Tableau de Bord</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('generateKeysForm');
+            const keyResults = document.getElementById('keyResults');
+            const publicKeyElement = document.getElementById('publicKey');
+            const privateKeyElement = document.getElementById('privateKey');
+            const savePrivateKeyButton = document.getElementById('savePrivateKey');
+
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                const password = document.getElementById('password').value;
+
+                try {
+                    const response = await fetch('/generate-keys', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ password })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        form.classList.add('d-none');
+                        keyResults.classList.remove('d-none');
+
+                        publicKeyElement.value = data.publicKey;
+                        privateKeyElement.value = data.privateKey;
+
+                        savePrivateKeyButton.addEventListener('click', function () {
+                            const blob = new Blob([data.privateKey], { type: 'text/plain' });
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = 'private_key.pem';
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                            URL.revokeObjectURL(url);
+                        });
+                    } else {
+                        alert('Erreur: ' + data.error);
+                    }
+                } catch (error) {
+                    console.error('Erreur lors de la génération des clés:', error);
+                    alert('Erreur lors de la génération des clés. Veuillez réessayer.');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
