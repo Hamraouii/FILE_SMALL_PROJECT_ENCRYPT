@@ -451,15 +451,15 @@ app.get('/decrypt', (req, res) => {
 
 app.get('/users', async (req, res) => {
   if (!req.session.userId) {
-    return res.status(401).json({ error: 'Unauthorized' }); // frontend-friendly error
+    return res.redirect('/login');
   }
 
   try {
     const users = await User.find({}, 'name email publicKey');
-    res.json(users); // ✅ send JSON response
+    res.render('users', { users });
   } catch (error) {
-    console.error('Users listing error:', error);
-    res.status(500).json({ error: 'Error fetching users' });
+    console.error('Erreur lors de la récupération des utilisateurs:', error);
+    res.status(500).send('Erreur lors de la récupération des utilisateurs');
   }
 });
 
