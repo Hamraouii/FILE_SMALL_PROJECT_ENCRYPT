@@ -17,26 +17,26 @@
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header bg-primary text-white">
-                        <h3 class="text-center">Register</h3>
+                        <h3 class="text-center">Créer un compte</h3>
                     </div>
                     <div class="card-body">
                         <form action="/register" method="POST">
                             <div class="mb-3">
-                                <label for="name" class="form-label">Full Name</label>
+                                <label for="name" class="form-label">Nom complet</label>
                                 <input type="text" class="form-control" id="name" name="name" required>
                             </div>
                             <div class="mb-3">
-                                <label for="email" class="form-label">Email</label>
+                                <label for="email" class="form-label">Adresse e-mail</label>
                                 <input type="email" class="form-control" id="email" name="email" required>
                             </div>
                             <div class="mb-3">
-                                <label for="password" class="form-label">Password</label>
+                                <label for="password" class="form-label">Mot de passe</label>
                                 <input type="password" class="form-control" id="password" name="password" required>
-                                <small class="text-muted">This password will be used to encrypt your private key</small>
+                                <small class="text-muted">Ce mot de passe sera utilisé pour chiffrer votre clé privée</small>
                             </div>
                             <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-primary">Register</button>
-                                <a href="/login" class="btn btn-link">Already have an account? Login</a>
+                                <button type="submit" class="btn btn-primary">Créer un compte</button>
+                                <a href="/login" class="btn btn-link">Vous avez déjà un compte ? S'authentifier</a>
                             </div>
                         </form>
                     </div>
