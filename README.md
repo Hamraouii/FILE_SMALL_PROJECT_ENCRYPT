@@ -99,10 +99,12 @@ secure-file-encryption-app/
 - Bcrypt - Hachage des mots de passe
 
 ## Commandes utiles 
+```bash
    **Backup**
    - docker run --rm -v uploads_data:/source -v $(pwd):/backup alpine tar -czf /backup/uploads_backup.tar.gz -C /source . 
    **restore**
    - docker run --rm -v uploads_data:/target -v $(pwd):/backup alpine sh -c "rm -rf /target/* && tar -xzf /backup/uploads_backup.tar.gz -C /target"
+   ```
 
 
 ## Licence
