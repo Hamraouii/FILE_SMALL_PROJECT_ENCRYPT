@@ -63,7 +63,11 @@
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 // Fetch users list for recipient selection
-                fetch('/users')
+                fetch('/users', {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                })
                     .then(response => response.json())
                     .then(users => {
                         const select = document.getElementById('recipientUserId');

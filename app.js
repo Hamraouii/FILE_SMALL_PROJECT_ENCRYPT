@@ -43,7 +43,7 @@ const ALLOWED_FILE_TYPES = [
 ];
 
 // Add cleanup configuration
-const UPLOAD_DIR = path.join(__dirname, 'uploads');
+const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(__dirname, 'uploads');
 const CLEANUP_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours
 const FILE_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days
 
@@ -456,9 +456,19 @@ app.get('/users', async (req, res) => {
 
   try {
     const users = await User.find({}, 'name email publicKey');
+    
+    // Check if the request wants JSON
+    if (req.headers.accept && req.headers.accept.includes('application/json')) {
+      return res.json(users);
+    }
+    
+    // Otherwise render the view
     res.render('users', { users });
   } catch (error) {
     console.error('Erreur lors de la récupération des utilisateurs:', error);
+    if (req.headers.accept && req.headers.accept.includes('application/json')) {
+      return res.status(500).json({ error: 'Erreur lors de la récupération des utilisateurs' });
+    }
     res.status(500).send('Erreur lors de la récupération des utilisateurs');
   }
 });
