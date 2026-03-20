@@ -21,7 +21,7 @@ Une application web permettant de chiffrer et déchiffrer des fichiers en toute 
 
 1. Clonez le dépôt :
 ```bash
-git clone https://github.com/Hamraouii/MGPAP_ENCRYPT.git
+git clone https://github.com/Hamraouii/FILE_SMALL_PROJECT_ENCRYPT.git
 ```
 
 2. Installez les dépendances :
